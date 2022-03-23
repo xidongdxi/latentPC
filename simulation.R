@@ -124,7 +124,6 @@ scen <- subset(scen, !(method == 3 & n < d))
 rownames(scen) <- paste0(1:nrow(scen))
 
 library(future.apply)
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update")
 source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
@@ -149,9 +148,3 @@ colnames(out) <- colnames(aaa)[3:11]
 # out$time <- out$time / 60
 round(out, 3)
 write.csv(out, file="summary_M3_200_243_0.05_0.5_1234.csv")
-
-d <- t(sapply(c(0:5), function(x) {
-  b <- subset(aaa, method == x & deg)
-  colMeans(b)[4:10]
-}))
-d
