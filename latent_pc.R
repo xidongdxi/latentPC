@@ -89,13 +89,3 @@ latent_pc <- function(X, label) {
 }
 
 # 
-# start_time <- proc.time()
-# labels <- label_fun(X)
-# deltas <- delta_fun(X, labels)
-# sig <- latent_pc(X, labels, deltas)
-# time <- c(proc.time() - start_time)[3]
-# 
-# start_time <- proc.time()
-# labels <- label_fun(X)
-# sig2 <- latent_pc2(X, labels)
-# time2 <- c(proc.time() - start_time)[3]
