@@ -1,3 +1,4 @@
+# Obtained from https://github.com/cuiruifei/CausalMissingValues/blob/master/R/inferCopulaModel.R
 inferCopulaModel <- function (Y, n0 = dim(Y)[2] + 1, S0 = diag(dim(Y)[2])/n0, nsamp = 100, 
           odens = max(1, round(nsamp/1000)), impute = any(is.na(Y)), 
           plugin.threshold = 20, plugin.marginal = (apply(Y, 2, function(x) {
