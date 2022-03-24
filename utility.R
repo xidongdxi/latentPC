@@ -178,3 +178,20 @@ OO_fun <- function(tau_o, delta_o) {
   }
   mean(z)
 }
+
+shd <- function (m1, m2) {
+  shd <- 0
+  s1 <- m1 + t(m1)
+  s2 <- m2 + t(m2)
+  s1[s1 == 2] <- 1
+  s2[s2 == 2] <- 1
+  ds <- s1 - s2
+  ind <- which(ds > 0)
+  m1[ind] <- 0
+  shd <- shd + length(ind)/2
+  ind <- which(ds < 0)
+  m1[ind] <- m2[ind]
+  shd <- shd + length(ind)/2
+  d <- abs(m1 - m2)
+  shd + sum((d + t(d)) > 0)/2
+}
