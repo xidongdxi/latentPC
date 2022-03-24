@@ -128,7 +128,7 @@ source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
 source("data_generation.R")
-plan(multisession)
+plan(cluster)
 start <- proc.time()
 result <- future_lapply(1:nrow(scen), FUN = sim, future.seed = NULL,
                         future.packages = c("pcalg", "Matrix", "MXM", "sbgcop",
