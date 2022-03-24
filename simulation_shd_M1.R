@@ -111,8 +111,8 @@ method <- c(0:5)
 scen <- expand.grid(seed, alpha, deg, method)
 # n <- c(50, 100, 150, 200, 1000, 200, 200)
 # d <- c(9,  27,  81,  243, 243, 729, 2187)
-n <- 50
-d <- 9
+n <- 200
+d <- 2187
 scen <- data.frame(rep(scen[, 1], length(n)),
                    rep(scen[, 2], length(n)),
                    rep(scen[, 3], length(n)),
@@ -123,7 +123,7 @@ scen <- subset(scen, !(method == 3 & n < d))
 rownames(scen) <- paste0(1:nrow(scen))
 
 library(future.apply)
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update")
+# setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update")
 source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
@@ -135,7 +135,7 @@ result <- future_lapply(1:nrow(scen), FUN = sim, future.seed = NULL,
                                             "mvtnorm", "pcaPP"), scen = scen)
 c(proc.time() - start)[3]
 aaa <- as.data.frame(do.call(rbind, result))
-write.csv(aaa, file="result_M3_200_243_0.05_0.5_1234.csv")
+write.csv(aaa, file="result_M1_200_2187_0.01_0.5_1234.csv")
 
 out <- data.frame()
 for (j in 1:2) {
@@ -147,10 +147,4 @@ for (j in 1:2) {
 colnames(out) <- colnames(aaa)[3:11]
 # out$time <- out$time / 60
 round(out, 3)
-write.csv(out, file="summary_M3_200_243_0.05_0.5_1234.csv")
-
-d <- t(sapply(c(0:5), function(x) {
-  b <- subset(aaa, method == x & deg)
-  colMeans(b)[4:10]
-}))
-d
+write.csv(out, file="summary_M1_200_2187_0.01_0.5_1234.csv")
