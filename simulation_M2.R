@@ -120,7 +120,7 @@ result <- future_lapply(1:nrow(scen), FUN = sim, future.seed = NULL,
                                             "mvtnorm", "pcaPP"), scen = scen)
 c(proc.time() - start)[3]
 aaa <- as.data.frame(do.call(rbind, result))
-write.csv(aaa, file="result_M3_100_27_0.01_0.5_1234.csv")
+write.csv(aaa, file="result_M2_100_27_0.01_0.5_1234.csv")
 
 out <- data.frame()
 for (j in 1:2) {
@@ -131,4 +131,4 @@ for (j in 1:2) {
 }
 colnames(out) <- colnames(aaa)[2:11]
 round(out, 3)
-write.csv(out, file="summary_M3_100_27_0.01_0.5_1234.csv")
+write.csv(out, file="summary_M2_100_27_0.01_0.5_1234.csv")
