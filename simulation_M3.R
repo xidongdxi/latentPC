@@ -8,7 +8,7 @@ sim <- function(x, scen) {
   n <- scen$n[x]
   d <- scen$d[x]
   method <- scen$method[x]
-  la <- c(rep("continuous", d / 3), rep("binary", d / 3), rep("ordinal", d / 3))
+  la <- c(rep("continuous", floor(d / 3)), rep("binary", floor(d / 3)), rep("ordinal", d - 2 * floor(d / 3)))
   data <- generate_DAG(n, d, deg, label = la, lB = -0.5, uB = 0.5)
   X <- data$X
   A <- as(dag2cpdag(data$A), "matrix")
