@@ -19,11 +19,11 @@ transform_fun <- function(X, label) {
   index <- c()
   delta <- list()
   for (i in 1:ncol(X)) {
-    if (label[i] == "Continuous") {
+    if (label[i] == "continuous") {
       index <- c(index, i)
       Y <- data.frame(Y, X[, i])
       delta <- append(delta, mean(X[, i]))
-    } else if (label[i] == "Binary") {
+    } else if (label[i] == "binary") {
       index <- c(index, i)
       Y <- data.frame(Y, X[, i])
       delta <- append(delta, qnorm(1 - mean(X[, i])))
@@ -86,7 +86,7 @@ CC_fun <- function(tau) {
   sin(pi / 2 * tau)
 }
 
-### BB: Binary and binary
+### BB: binary and binary
 ## Input
 # x: Pearson's correlation coefficient to be solve for
 # tau_x: Kendall's tau correlation coefficient
@@ -102,7 +102,7 @@ BB_fun <- function(x, tau_x, delta_x) {
       2 * pnorm(delta_x[1]) * pnorm(delta_x[2]) - tau_x)^2
 }
 
-### BC: Binary and continuous, or vice versa
+### BC: binary and continuous, or vice versa
 ## Input
 # x: Pearson's correlation coefficient to be solve for
 # tau_x: Kendall's tau correlation coefficient
@@ -118,7 +118,7 @@ BC_fun <- function(x, tau_x, delta_x) {
       2 * pnorm(delta_x) - tau_x)^2
 }
 
-# CO: Continuous and ordinal, or vice versa
+# CO: continuous and ordinal, or vice versa
 ## Input
 # tau_o: Kendall's tau correlation between continuous and binary cuts from the ordinal variable
 # label_o: Labels for the two columns
@@ -128,7 +128,7 @@ BC_fun <- function(x, tau_x, delta_x) {
 CO_fun <- function(tau_o, label_o, delta_o) {
   delta_o <- unlist(delta_o)
   z <- c()
-  id <- which(label_o == "Ordinal")
+  id <- which(label_o == "ordinal")
   level <- length(delta_o)
   for (h in 1:level) {
     z <- c(z, optimize(BC_fun, c(-0.9999, 0.9999),
@@ -138,7 +138,7 @@ CO_fun <- function(tau_o, label_o, delta_o) {
   mean(z)
 }
 
-# BO: Binary and ordinal, or vice versa
+# BO: binary and ordinal, or vice versa
 ## Input
 # tau_o: Kendall's tau correlation between continuous and binary cuts from the ordinal variable
 # label_o: Labels for the two columns
@@ -148,7 +148,7 @@ CO_fun <- function(tau_o, label_o, delta_o) {
 # Pearson's correlation coefficient
 BO_fun <- function(tau_o, label_o, delta_o) {
   z <- c()
-  id <- which(label_o == "Ordinal")
+  id <- which(label_o == "ordinal")
   level <- length(delta_o[[id]])
   for (h in 1:level) {
     z <- c(z, optimize(BB_fun, c(-0.9999, 0.9999),
@@ -158,7 +158,7 @@ BO_fun <- function(tau_o, label_o, delta_o) {
   mean(z)
 }
 
-# OO: Ordinal and ordinal, or vice versa
+# OO: ordinal and ordinal, or vice versa
 ## Input
 # tau_o: Kendall's tau correlation between binary cuts from the two ordinal variable
 # delta_o: List of the normal quantile of 1 - means of
