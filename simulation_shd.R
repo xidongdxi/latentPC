@@ -8,7 +8,7 @@ sim <- function(x, scen) {
   n <- scen$n[x]
   d <- scen$d[x]
   method <- scen$method[x]
-  la <- c(rep("Continuous", d / 3), rep("Binary", d / 3), rep("Ordinal", d / 3))
+  la <- c(rep("continuous", d / 3), rep("binary", d / 3), rep("ordinal", d / 3))
   data <- generate_DAG(n, d, deg, label = la, lB = -0.5, uB = 0.5)
   X <- data$X
   A <- as(dag2cpdag(data$A), "matrix")
@@ -89,20 +89,6 @@ sim <- function(x, scen) {
 }
 
 # # Parallel
-# # library(pbivnorm)
-# # library(rootSolve)
-# library(pcalg)
-# library(Matrix)
-# # library(Rcpp)
-# # library(RcppArmadillo)
-# # library(RcppNumerical)
-# library(MXM)
-# library(sbgcop)
-# # library(mixcausal)
-# library(mvtnorm)
-# library(pcaPP)
-
-
 # alpha <- sort(c(0.01, 0.9^(seq(50, 1, by = -1))))
 alpha <- 0.01
 deg <- c(3, 5)
@@ -123,7 +109,6 @@ scen <- subset(scen, !(method == 3 & n < d))
 rownames(scen) <- paste0(1:nrow(scen))
 
 library(future.apply)
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update")
 source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
@@ -135,16 +120,15 @@ result <- future_lapply(1:nrow(scen), FUN = sim, future.seed = NULL,
                                             "mvtnorm", "pcaPP"), scen = scen)
 c(proc.time() - start)[3]
 aaa <- as.data.frame(do.call(rbind, result))
-write.csv(aaa, file="result_M3_200_243_0.05_0.5_1234.csv")
+write.csv(aaa, file="result_M3_100_27_0.01_0.5_1234.csv")
 
 out <- data.frame()
 for (j in 1:2) {
   for (i in 1:6) {
     b <- subset(aaa, method == (0:5)[i] & deg == c(3, 5)[j])
-    out <- rbind(out, colMeans(b, na.rm = T)[3:11])
+    out <- rbind(out, colMeans(b, na.rm = T)[2:11])
   }
 }
-colnames(out) <- colnames(aaa)[3:11]
-# out$time <- out$time / 60
+colnames(out) <- colnames(aaa)[2:11]
 round(out, 3)
-write.csv(out, file="summary_M3_200_243_0.05_0.5_1234.csv")
+write.csv(out, file="summary_M3_100_27_0.01_0.5_1234.csv")
