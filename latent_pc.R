@@ -5,7 +5,7 @@
 # Binary variable should only contain 0 or 1
 # Ordinal variable should only contain 0, 1, 2, ...
 ## Output
-# A vector of labels for all variables: "Binary", "Continuous", "Ordinal"
+# A vector of labels for all variables: "binary", "continuous", "ordinal"
 label_fun <- function(X) {
   if (any(is.na(X))) {
     stop("Data should not contain NA")
@@ -21,16 +21,16 @@ label_fun <- function(X) {
         stop("Data contain a variable with a constant value")
       } else if (length(table(temp)) == 2) {
         if (all(temp %in% c(0, 1))) {
-          y <- c(y, "Binary")
+          y <- c(y, "binary")
         } else {
-          y <- c(y, "Continuous")
+          y <- c(y, "continuous")
         }
       } else {
         level <- sort(unique(temp))
         if (all(temp %in% 0:max(level))) {
-          y <- c(y, "Ordinal")
+          y <- c(y, "ordinal")
         } else {
-          y <- c(y, "Continuous")
+          y <- c(y, "continuous")
         }
       }
     }
@@ -57,29 +57,29 @@ latent_pc <- function(X, label) {
       id1 <- which(index == i)
       id2 <- which(index == j)
       temp <- Y[, c(id1, id2)]
-      if (all(temp_label == c("Continuous", "Continuous"))) {
+      if (all(temp_label == c("continuous", "continuous"))) {
         sig[i, j] <- CC_fun(tau[id1, id2])
-      } else if (all(temp_label == c("Continuous", "Binary"))) {
+      } else if (all(temp_label == c("continuous", "binary"))) {
         sig[i, j] <- optimize(BC_fun, c(-0.9999, 0.9999),
                               tau_x = tau[id1, id2],
                               delta_x = delta[j])$minimum
-      } else if (all(temp_label == c("Binary", "Continuous"))) {
+      } else if (all(temp_label == c("binary", "continuous"))) {
         sig[i, j] <- optimize(BC_fun, c(-0.9999, 0.9999),
                               tau_x = tau[id1, id2],
                               delta_x = delta[i])$minimum
-      } else if (all(temp_label == c("Binary", "Binary"))) {
+      } else if (all(temp_label == c("binary", "binary"))) {
         sig[i, j] <- optimize(BB_fun, c(-0.9999, 0.9999),
                               tau_x = tau[id1, id2],
                               delta_x = delta[c(i, j)])$minimum
-      } else if (all(temp_label == c("Continuous", "Ordinal"))) {
+      } else if (all(temp_label == c("continuous", "ordinal"))) {
         sig[i, j] <- CO_fun(tau[c(id1, id2), c(id1, id2)], label[c(i, j)], delta[j])
-      } else if (all(temp_label == c("Ordinal", "Continuous"))) {
+      } else if (all(temp_label == c("ordinal", "continuous"))) {
         sig[i, j] <- CO_fun(tau[c(id1, id2), c(id1, id2)], label[c(i, j)], delta[i])
-      } else if (all(temp_label == c("Binary", "Ordinal"))) {
+      } else if (all(temp_label == c("binary", "ordinal"))) {
         sig[i, j] <- BO_fun(tau[c(id1, id2), c(id1, id2)], label[c(i, j)], delta[c(i, j)])
-      } else if (all(temp_label == c("Ordinal", "Binary"))) {
+      } else if (all(temp_label == c("ordinal", "binary"))) {
         sig[i, j] <- BO_fun(tau[c(id1, id2), c(id1, id2)], label[c(i, j)], delta[c(i, j)])
-      } else if (all(temp_label == c("Ordinal", "Ordinal"))) {
+      } else if (all(temp_label == c("ordinal", "ordinal"))) {
         sig[i, j] <- OO_fun(tau[c(id1, id2), c(id1, id2)], delta[c(i, j)])
       }
       sig[j, i] <- sig[i, j]
