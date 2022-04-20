@@ -1,0 +1,50 @@
+Gender: nominal
+Symptoms: nominal
+Alcohol: nominal
+Hepatitis B Surface Antigen: nominal
+Hepatitis B e Antigen: nominal
+Hepatitis B Core Antibody: nominal
+Hepatitis C Virus Antibody: nominal
+Cirrhosis: nominal
+Endemic Countries: nominal
+Smoking: nominal
+Diabetes: nominal
+Obesity: nominal
+Hemochromatosis: nominal
+Arterial Hypertension: nominal
+Chronic Renal Insufficiency: nominal
+Human Immunodeficiency Virus: nominal
+Nonalcoholic Steatohepatitis: nominal
+Esophageal Varices: nominal
+Splenomegaly: nominal
+Portal Hypertension: nominal
+Portal Vein Thrombosis: nominal
+Liver Metastasis: nominal
+Radiological Hallmark: nominal
+Age at diagnosis: integer
+Grams of Alcohol per day: continuous
+Packs of cigarets per year: continuous
+Performance Status: ordinal
+Encefalopathy degree: ordinal
+Ascites degree: ordinal
+International Normalised Ratio: continuous
+Alpha-Fetoprotein (ng/mL): continuous
+Haemoglobin (g/dL): continuous
+Mean Corpuscular Volume (fl): continuous
+Leukocytes(G/L): continuous
+Platelets (G/L): continuous
+Albumin (mg/dL): continuous
+Total Bilirubin(mg/dL): continuous
+Alanine transaminase (U/L): continuous
+Aspartate transaminase (U/L): continuous
+Gamma glutamyl transferase (U/L): continuous
+Alkaline phosphatase (U/L): continuous
+Total Proteins (g/dL): continuous
+Creatinine (mg/dL): continuous
+Number of Nodules: integer
+Major dimension of nodule (cm): continuous
+Direct Bilirubin (mg/dL): continuous
+Iron (mcg/dL): continuous
+Oxygen Saturation (%): continuous
+Ferritin (ng/mL): continuous
+Class: nominal (1 if patient survives, 0 if patient died)
