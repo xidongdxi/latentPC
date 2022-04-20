@@ -1,4 +1,3 @@
-rm(list= ls())
 library(pcalg)
 library(mvtnorm)
 library(Matrix)
@@ -6,15 +5,14 @@ library(sbgcop)
 library(MXM)
 library(igraph)
 library(readxl)
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc")
 library(xtable)
-source("real_functions.R")
+source("/hcc-data/real_functions.R")
 
 # Read data
-p <- read.csv("hcc-data.txt", sep = ",", header = FALSE)
+p <- read.csv("/hcc-data/hcc-data.txt", sep = ",", header = FALSE)
 p[p == "?"] <- NA
-n1 <- read.table("HCCnames.txt", sep = ":", header = FALSE)
-c1 <- read.csv("colnames.csv", header = F)
+n1 <- read.table("/hcc-data/HCCnames.txt", sep = ":", header = FALSE)
+c1 <- read.csv("/hcc-data/colnames.csv", header = F)
 colnames(c1) <- c("Names", "Type", "Range", "Mean or mode", "Missingness")
 c1$Names[1] <- "Gender"
 colnames(p) <- c(c1[, 1], "class")
@@ -44,7 +42,7 @@ p3 <- lapply(p2, function(x) {
 p3 <- as.data.frame(p3)
 descp$Abbreviation <- abbreviate(colnames(p3), 6)
 res <- xtable(descp[, c(6, 8, 7, 3, 4)])
-# TABLE 4 Description of the hepatocellular carcinoma data set, where n = 138, d = 28.
+# Description of the hepatocellular carcinoma data set, where n = 138, d = 28.
 # print(res, include.rownames = FALSE)
 
 # Re-categorize ordinal variables to 0, 1, 2, ... 
@@ -63,12 +61,10 @@ colnames(scen) <- c("alpha", "ratio", "rep.times")
 scen <- list(scen, X, label)
 
 library(future.apply)
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd")
 source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
-setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc")
-source("real_functions.R")
+source("/hcc-data/real_functions.R")
 plan(multisession)
 start <- proc.time()
 result <- future_lapply(1:nrow(scen[[1]]), FUN = StARS_parallel, future.seed = NULL,
@@ -77,7 +73,6 @@ result <- future_lapply(1:nrow(scen[[1]]), FUN = StARS_parallel, future.seed = N
 c(proc.time() - start)[3]
 aaa <- as.data.frame(do.call(rbind, result))
 alpha[tail(which(diff(aaa$D) > 0), 1) - 1] # 0.07
-
 
 # Latent PC
 sig1 <- latent_pc(X, label)
@@ -90,7 +85,7 @@ pc.fit <- pc(suffStat = list(C = sig1, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_latent_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/HCC_latent_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -105,7 +100,7 @@ pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_vanilla_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/HCC_vanilla_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -120,7 +115,7 @@ pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_rank_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/HCC_rank_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -137,7 +132,7 @@ pc.fit <- pc(suffStat = list(C = corr.cop, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_copula_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/HCC_copula_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -161,7 +156,7 @@ for (i in 1:ncol(X)) {
 gg <- new("graphNEL", nodes = abbreviate(colnames(X), 6), edgeL = edL, edgemode = "directed")
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_mmpc.pdf", height = 20, width = 15)
+pdf("/hcc-data/HCC_mmpc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
