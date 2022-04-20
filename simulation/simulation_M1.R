@@ -134,4 +134,3 @@ for (k in 1:2) {
 
 colnames(out) <- colnames(aaa)[2:11]
 round(out, 3)
-write.csv(out, file="summary_M1_100_27.csv")
