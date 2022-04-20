@@ -4,7 +4,6 @@ sim <- function(x, scen) {
   set.seed(scen$seed[x])
   alpha <- scen$alpha[x]
   deg <- scen$deg[x]
-  nsim <- scen$nsim[x]
   n <- scen$n[x]
   d <- scen$d[x]
   method <- scen$method[x]
@@ -89,8 +88,7 @@ sim <- function(x, scen) {
 }
 
 # # Parallel
-# alpha <- sort(c(0.01, 0.9^(seq(50, 1, by = -1))))
-alpha <- 0.01
+alpha <- c(0.01, 0.05)
 deg <- c(3, 5)
 seed <- 1234:(1234 + 49)
 method <- c(0:5)
@@ -112,23 +110,27 @@ library(future.apply)
 source("utility.R")
 source("copula_pc.R")
 source("latent_pc.R")
-source("data_generation.R")
+source("/simulation/data_generation.R")
 plan(multisession)
+# plan(multicore) for non-Windows system
+# plan(cluster) for grid parallelization
 start <- proc.time()
 result <- future_lapply(1:nrow(scen), FUN = sim, future.seed = NULL,
                         future.packages = c("pcalg", "Matrix", "MXM", "sbgcop",
                                             "mvtnorm", "pcaPP"), scen = scen)
 c(proc.time() - start)[3]
 aaa <- as.data.frame(do.call(rbind, result))
-write.csv(aaa, file="result_M3_100_27_0.01_0.5_1234.csv")
+write.csv(aaa, file="result_M3_100_27.csv")
 
 out <- data.frame()
-for (j in 1:2) {
-  for (i in 1:6) {
-    b <- subset(aaa, method == (0:5)[i] & deg == c(3, 5)[j])
-    out <- rbind(out, colMeans(b, na.rm = T)[2:11])
+for (k in 1:2) {
+  for (j in 1:2) {
+    for (i in 1:6) {
+      b <- subset(aaa, method == (0:5)[i] & deg == c(3, 5)[j] & alpha == c(0.01, 0.05)[k])
+      out <- rbind(out, colMeans(b, na.rm = T)[2:11])
+    }
   }
 }
 colnames(out) <- colnames(aaa)[2:11]
 round(out, 3)
-write.csv(out, file="summary_M3_100_27_0.01_0.5_1234.csv")
+write.csv(out, file="summary_M3_100_27.csv")
