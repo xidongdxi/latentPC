@@ -1,131 +1,168 @@
 rm(list= ls())
+library(pcalg)
+library(mvtnorm)
+library(Matrix)
+library(sbgcop)
+library(MXM)
 library(igraph)
 library(readxl)
 setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc")
 library(xtable)
 source("real_functions.R")
 
-
+# Read data
 p <- read.csv("hcc-data.txt", sep = ",", header = FALSE)
-p[p=="?"] = NA
+p[p == "?"] <- NA
 n1 <- read.table("HCCnames.txt", sep = ":", header = FALSE)
 c1 <- read.csv("colnames.csv", header = F)
 colnames(c1) <- c("Names", "Type", "Range", "Mean or mode", "Missingness")
 c1$Names[1] <- "Gender"
-colnames(p) <- c(c1[,1], "class")
+colnames(p) <- c(c1[, 1], "class")
 colnames(p) <- camel(colnames(p))
 c1 <- rbind(c1, c("Class", "binary", "0/1", 1, 0))
-c1$Range <- gsub("-", "--", c1$Range)
-mm <- c1[,4]
+mm <- c1[, 4]
 
+# Label
 label.p <- n1[,2]
 label.p[50] <- " nominal"
 label.p <- gsub(" ", "", label.p)
 label.p[label.p == "nominal"] <- "binary"
 label.p[label.p == "integer"] <- "continuous"
 
-p1 <- lapply(p, function(x) {
-  if(is.character(x)) as.numeric(x) else x
-})
-p1 <- as.data.frame(p1)
-for(j in 1:49) {
-  p1[is.na(p1[, j]), j] <- mm[j]
-}
-
 ### Filter out the columns with many missing values
-ind1 <- which(colMeans(is.na(p)) < 0.05)
-p2 <- p[, ind1]
-la <- label.p[ind1]
+ind <- which(colMeans(is.na(p)) < 0.05)
+p1 <- p[, ind]
+la <- label.p[ind]
 c1$Fullname <- n1[, 1]
-descp <- c1[ind1, ]
+descp <- c1[ind, ]
 descp$Label <- la
 
-p2 <- na.omit(p2)
+p2 <- na.omit(p1)
 p3 <- lapply(p2, function(x) {
   if(is.character(x)) as.numeric(x) else x
 })
 p3 <- as.data.frame(p3)
 descp$Abbreviation <- abbreviate(colnames(p3), 6)
-res <- xtable(descp[, c(6,8, 7, 3, 4)])
-print(res, include.rownames = FALSE)
+res <- xtable(descp[, c(6, 8, 7, 3, 4)])
+# TABLE 4 Description of the hepatocellular carcinoma data set, where n = 138, d = 28.
+# print(res, include.rownames = FALSE)
 
+# Re-categorize ordinal variables to 0, 1, 2, ... 
+p3[, res$Abbreviation == "Encflp"] <- as.numeric(p3[, res$Abbreviation == "Encflp"]) - 1
+p3[, res$Abbreviation == "Ascits"] <- as.numeric(p3[, res$Abbreviation == "Ascits"]) - 1
 newhcc = list(hcc = p3, label = la)
-save(newhcc, file = "hcc.rda")
 
 # Tuning parameter
 X = as.matrix(newhcc$hcc)
 label = newhcc$label
-r1 = 0.7
-rep.t = 100
-ss = StARS(X, label = label, ratio = r1, rep.times = rep.t)
-filename1 = paste("HCC_tune_", r1, ".rda", sep = "")
-save(ss, file = filename1)
-filename2 = paste("HCC_tune_plot_", r1, ".pdf", sep = "")
-pdf(filename2)
-plot(ss$alpha, ss$D)
-dev.off()
+alpha <- seq(0.01, 0.1, by = 0.01)
+ratio = 0.7
+rep.times = 100
+scen <- expand.grid(alpha, ratio, rep.times)
+colnames(scen) <- c("alpha", "ratio", "rep.times")
+scen <- list(scen, X, label)
+
+library(future.apply)
+setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd")
+source("utility.R")
+source("copula_pc.R")
+source("latent_pc.R")
+setwd("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc")
+source("real_functions.R")
+plan(multisession)
+start <- proc.time()
+result <- future_lapply(1:nrow(scen[[1]]), FUN = StARS_parallel, future.seed = NULL,
+                        future.packages = c("pcalg", "Matrix", "mvtnorm", "pcaPP"),
+                        scen = scen)
+c(proc.time() - start)[3]
+aaa <- as.data.frame(do.call(rbind, result))
+alpha[tail(which(diff(aaa$D) > 0), 1) - 1] # 0.07
+
 
 # Latent PC
-labels <- label_fun(p3)
-sig1 <- latent_pc(p3, labels)
+sig1 <- latent_pc(X, label)
 sig1 <- as.matrix(nearPD(sig1, corr = TRUE, maxit = 10000)$mat)
-pc.fit <- pc(suffStat = list(C = sig1, n = nrow(p3)),
+pc.fit <- pc(suffStat = list(C = sig1, n = nrow(X)),
              indepTest = gaussCItest, ## indep.test: partial correlations
-             alpha = alpha, labels = colnames(X), skel.method = "stable.fast",
+             alpha = 0.07,
+             labels = abbreviate(colnames(X), 6), skel.method = "stable.fast",
              verbose = F)
+gg = attributes(pc.fit)$graph
+dd = Rgraphviz::getDefaultAttrs()
+dd$node$fontsize = "20"
+pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_latent_pc.pdf", height = 20, width = 15)
+par(mar = c(0.01, 0.01, 0.01, 0.01))
+Rgraphviz::plot(gg, attrs = dd)
+dev.off()
 
 # Vanilla PC
-sig <- cor(p3)
-pc.fit <- pc(suffStat = list(C = sig, n = nrow(p3)),
+sig <- cor(X)
+pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
              indepTest = gaussCItest, ## indep.test: partial correlations
-             alpha = alpha, labels = colnames(X), skel.method = "stable.fast",
+             alpha = 0.07,
+             labels = abbreviate(colnames(X), 6), skel.method = "stable.fast",
              verbose = F)
-
-
-
-sig1 = LGC_sigma_AllType(as.matrix(p3), la)
-#sig1[which(is.na(sig1), arr.ind = T)] = cor(p)[which(is.na(sig1), arr.ind = T)]
-sum(is.na(sig1))
-sig1 = nearPD(sig1, corr = TRUE)$mat
-pc.fit1 <- pc(suffStat = list(C = sig1, n = nrow(p3)), indepTest = gaussCItest, maj.rule = T, 
-              alpha=0.05, labels = abbreviate(colnames(p3), 6), skel.method = "stable", verbose = F)
-#summary(pc.fit1)
-adj1 = t(as(pc.fit1, "amat"))
-sum(adj1)
-gg = attributes(pc.fit1)$graph
-dd = getDefaultAttrs()
+gg = attributes(pc.fit)$graph
+dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/Users/zhanruicai/Library/Mobile Documents/com~apple~CloudDocs/Research/MixedCausalDoc/HCC_latent.pdf",  height = 20, width = 15)
+pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_vanilla_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
-plot(gg, attrs = dd)
+Rgraphviz::plot(gg, attrs = dd)
 dev.off()
 
-
-
-sig2 = cor(p3, method = "kendall")
-sig3 = cor(p3)
-pc.fit2 <- pc(suffStat = list(C = sig2, n = nrow(p3)), indepTest = gaussCItest, 
-              alpha=0.07, labels = abbreviate(colnames(p3), 6), skel.method = "stable",verbose = F)
-g2 = attributes(pc.fit2)$graph
-adj2 = t(as(pc.fit2, "amat"))
-sum(adj2)
-pdf("/Users/zhanruicai/Library/Mobile Documents/com~apple~CloudDocs/Research/MixedCausalDoc/HCC_rank.pdf",  height = 20, width = 15)
+# Rank PC
+sig <- sin(pi / 2 * pcaPP::cor.fk(X))
+pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
+             indepTest = gaussCItest, ## indep.test: partial correlations
+             alpha = 0.07,
+             labels = abbreviate(colnames(X), 6), skel.method = "stable.fast",
+             verbose = F)
+gg = attributes(pc.fit)$graph
+dd = Rgraphviz::getDefaultAttrs()
+dd$node$fontsize = "20"
+pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_rank_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
-plot(g2, attrs = dd)
+Rgraphviz::plot(gg, attrs = dd)
 dev.off()
 
-pc.fit3 <- pc(suffStat = list(C = sig3, n = nrow(p3)), indepTest = gaussCItest, 
-              alpha=0.07, labels = abbreviate(colnames(p3), 6), skel.method = "stable",verbose = F)
-adj3 = t(as(pc.fit3, "amat"))
-sum(adj3)
-g3 = attributes(pc.fit3)$graph
-pdf("/Users/zhanruicai/Library/Mobile Documents/com~apple~CloudDocs/Research/MixedCausalDoc/HCC_vani.pdf",  height = 20, width = 15)
+# Copula PC
+cop.obj <- inferCopulaModel(X, nsamp = 1000, S0 = diag(ncol(X)) / nrow(X), verb = F)
+C_samples <- cop.obj$C.psamp[, , 501:1000]
+corr.cop <- apply(C_samples, c(1, 2), mean)
+pc.fit <- pc(suffStat = list(C = corr.cop, n = nrow(X)),
+             indepTest = gaussCItest, ## indep.test: partial correlations
+             alpha = 0.07,
+             labels = abbreviate(colnames(X), 6), skel.method = "stable.fast",
+             verbose = F)
+gg = attributes(pc.fit)$graph
+dd = Rgraphviz::getDefaultAttrs()
+dd$node$fontsize = "20"
+pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_copula_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
-plot(g3, attrs = dd)
+Rgraphviz::plot(gg, attrs = dd)
 dev.off()
 
-
-
-
-
+# MMPC
+skel <- suppressWarnings(pc.skel(as.data.frame(X), method = "comb.mm", alpha = 0.07))
+pc.fit <- pc.or(skel)
+tsig <- pc.fit$G
+tsig[tsig == 2] <- 0
+tsig[tsig == 3] <- 1
+edL <- vector("list", length = ncol(X))
+names(edL) <- abbreviate(colnames(X), 6)
+for (i in 1:ncol(X)) {
+  temp <- tsig[, i]
+  if (any(temp == 1)) {
+    edL[[i]] <- list(edges = as.numeric(which(temp == 1)), weights = rep(1, sum(temp == 1)))
+  } else {
+    edL[[i]] <- list()
+  }
+}
+gg <- new("graphNEL", nodes = abbreviate(colnames(X), 6), edgeL = edL, edgemode = "directed")
+dd = Rgraphviz::getDefaultAttrs()
+dd$node$fontsize = "20"
+pdf("C:/Users/dxi1/OneDrive - Gilead Sciences/Paper/Latent PC/Code/Update/shd/hcc/HCC_mmpc.pdf", height = 20, width = 15)
+par(mar = c(0.01, 0.01, 0.01, 0.01))
+Rgraphviz::plot(gg, attrs = dd)
+dev.off()
 

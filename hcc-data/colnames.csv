@@ -1,0 +1,49 @@
+﻿Gender,Qualitative/dichotomous,0/1,1,0
+Symptoms,Qualitative/dichotomous,0/1,1,10.91
+Alcohol,Qualitative/dichotomous,0/1,1,0
+HBsAg,Qualitative/dichotomous,0/1,0,10.3
+HBeAg,Qualitative/dichotomous,0/1,0,23.64
+HBcAb,Qualitative/dichotomous,0/1,0,14.55
+HCVAb,Qualitative/dichotomous,0/1,0,5.45
+Cirrhosis,Qualitative/dichotomous,0/1,1,0
+Endemic countries,Qualitative/dichotomous,0/1,0,23.64
+Smoking,Qualitative/dichotomous,0/1,1,24.85
+Diabetes,Qualitative/dichotomous,0/1,0,1.82
+Obesity,Qualitative/dichotomous,0/1,0,6.06
+Hemochromatosis,Qualitative/dichotomous,0/1,0,13.94
+AHT,Qualitative/dichotomous,0/1,0,1.82
+CRI,Qualitative/dichotomous,0/1,0,1.21
+HIV,Qualitative/dichotomous,0/1,0,8.48
+NASH,Qualitative/dichotomous,0/1,0,13.33
+Esophageal varices,Qualitative/dichotomous,0/1,1,31.52
+Splenomegaly,Qualitative/dichotomous,0/1,1,9.09
+Portal hypertension,Qualitative/dichotomous,0/1,1,6.67
+Portal vein thrombosis,Qualitative/dichotomous,0/1,0,1.82
+Liver metastasis,Qualitative/dichotomous,0/1,0,2.42
+Radiological hallmark,Qualitative/dichotomous,0/1,1,1.21
+Age at diagnosis,Quantitative/ratio,20-93,64.69,0
+Grams/day,Quantitative/ratio,0-500,71.01,29.09
+Packs/year,Quantitative/ratio,0-510,20.46,32.12
+Performance status,Qualitative/ordinal,"0, 1, 2, 3, 4",0,0
+Encefalopathy,Qualitative/ordinal,"0, 1, 2",0,0.61
+Ascites,Qualitative/ordinal,"0, 1, 2",0,1.21
+INR,Quantitative/ratio,0.84-4.82,1.42,2.42
+AFP,Quantitative/ratio,"1.2-1,810,346",19299.95,4.85
+Hemoglobin,Quantitative/ratio,5-18.7,12.88,1.82
+MCV,Quantitative/ratio,69.5-119.6,95.12,1.82
+Leukocytes,Quantitative/ratio,"2.2-13,000",1473.96,1.82
+Platelets,Quantitative/ratio,"1.71-459,000",113206.44,1.82
+Albumin,Quantitative/ratio,1.9-4.9,3.45,3.64
+Total Bil,Quantitative/ratio,0.3-40.5,3.09,3.03
+ALT,Quantitative/ratio,11-420,67.09,2.42
+AST,Quantitative/ratio,17-553,69.38,1.82
+GGT,Quantitative/ratio,23-1575,268.03,1.82
+ALP,Quantitative/ratio,1.28-980,212.21,1.82
+TP,Quantitative/ratio,3.9-102,8.96,6.67
+Creatinine,Quantitative/ratio,0.2-7.6,1.13,4.24
+Number of nodules,Quantitative/ratio,0-5,2.74,1.21
+Major dimension,Quantitative/ratio,1.5-22,6.85,12.12
+Dir. bil,Quantitative/ratio,0.1-29.3,1.93,26.67
+Iron,Quantitative/ratio,0-224,85.6,47.88
+Sat,Quantitative/ratio,0-126,37.03,48.48
+Ferritin,Quantitative/ratio,0-2230,439,48.48
