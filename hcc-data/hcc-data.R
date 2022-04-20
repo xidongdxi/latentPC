@@ -9,10 +9,10 @@ library(xtable)
 source("/hcc-data/real_functions.R")
 
 # Read data
-p <- read.csv("/hcc-data/hcc-data.txt", sep = ",", header = FALSE)
+p <- read.csv("/hcc-data/data/hcc-data.txt", sep = ",", header = FALSE)
 p[p == "?"] <- NA
-n1 <- read.table("/hcc-data/HCCnames.txt", sep = ":", header = FALSE)
-c1 <- read.csv("/hcc-data/colnames.csv", header = F)
+n1 <- read.table("/hcc-data/data/HCCnames.txt", sep = ":", header = FALSE)
+c1 <- read.csv("/hcc-data/data/colnames.csv", header = F)
 colnames(c1) <- c("Names", "Type", "Range", "Mean or mode", "Missingness")
 c1$Names[1] <- "Gender"
 colnames(p) <- c(c1[, 1], "class")
@@ -85,7 +85,7 @@ pc.fit <- pc(suffStat = list(C = sig1, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/HCC_latent_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_latent_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -100,7 +100,7 @@ pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/HCC_vanilla_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_vanilla_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -115,7 +115,7 @@ pc.fit <- pc(suffStat = list(C = sig, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/HCC_rank_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_rank_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -132,7 +132,7 @@ pc.fit <- pc(suffStat = list(C = corr.cop, n = nrow(X)),
 gg = attributes(pc.fit)$graph
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/HCC_copula_pc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_copula_pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
@@ -156,7 +156,7 @@ for (i in 1:ncol(X)) {
 gg <- new("graphNEL", nodes = abbreviate(colnames(X), 6), edgeL = edL, edgemode = "directed")
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/HCC_mmpc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_mmpc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
