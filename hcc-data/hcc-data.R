@@ -137,7 +137,7 @@ par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
 
-# MMPC
+# MM-PC
 skel <- suppressWarnings(pc.skel(as.data.frame(X), method = "comb.mm", alpha = 0.07))
 pc.fit <- pc.or(skel)
 tsig <- pc.fit$G
@@ -156,7 +156,7 @@ for (i in 1:ncol(X)) {
 gg <- new("graphNEL", nodes = abbreviate(colnames(X), 6), edgeL = edL, edgemode = "directed")
 dd = Rgraphviz::getDefaultAttrs()
 dd$node$fontsize = "20"
-pdf("/hcc-data/results/HCC_mmpc.pdf", height = 20, width = 15)
+pdf("/hcc-data/results/HCC_mm-pc.pdf", height = 20, width = 15)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 Rgraphviz::plot(gg, attrs = dd)
 dev.off()
