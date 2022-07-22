@@ -53,7 +53,7 @@ sim <- function(x, scen) {
                  verbose = F)
     tsig <- as(pc.fit, "amat")
   } else if (method == 4) {
-    # LR PC
+    # MM-PC
     skel <- suppressWarnings(pc.skel(X, method = "comb.mm", alpha = alpha))
     pc.fit <- pc.or(skel)
     tsig <- pc.fit$G
@@ -61,9 +61,8 @@ sim <- function(x, scen) {
     tsig[tsig == 2] <- 0
     tsig[tsig == 3] <- 1
   } else if (method == 5) {
+    # Latent PC
     labels <- label_fun(X)
-    # deltas <- delta_fun(X, labels)
-    # sig <- latent_pc(X, labels, deltas)
     sig <- latent_pc(X, labels)
     sig_diff <- sum(abs(sig - data$sigmahat))
     sig <- as.matrix(nearPD(sig, corr = TRUE, maxit = 10000)$mat)
